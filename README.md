@@ -1,8 +1,8 @@
 
 
-# **⚽ GOLDENKICK 프로젝트-Ballzzi**<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;RAG 기반 LLM 챗봇&nbsp;&nbsp;-
+# **⚽ GOLDENKICK 프로젝트-Ballzzi**<br/>&nbsp;&nbsp;-&nbsp;&nbsp;RAG 기반 LLM 챗봇&nbsp;&nbsp;-
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;***Our Customer's Victory is Our Victory***
+&nbsp;&nbsp;***Our Customer's Victory is Our Victory***
 
 ---
 
@@ -69,15 +69,15 @@
 
 ## I. 프로젝트 개요
 
-**GOLDENKICK**프로젝트는 Ballzzi라는 케릭터를 활용한 Ballzzi라는이름의 LLM챗봇으로, RAG 기반의 langchain agent로 구성했다. 8,000명 이상의 축구 선수 데이터베이스와 인사업무 자동화를 통합한 RAG 기반 LLM 챗봇 시스템입니다.
+**GOLDENKICK**프로젝트는 Ballzzi라는 케릭터를 활용해 Ballzzi봇이 라는이름의 LLM챗봇으로, RAG 기반의 langchain agent로 구성했습니다. 8,000명 이상의 축구 선수 데이터베이스와 인사정보 및 내부규정을 검색가능한 RAG 기반 LLM 챗봇 시스템으로, 정형DB인 축구선수 데이터와 인사정보 및 내부규정는 벡터DB로 구성하였습니다. 이러한 기능은 하나의 채팅창에서 이루어집니다.
 
 - **프로젝트명**: GOLDENKICK (Ballzzi)
 - **기업형태**: 스포츠 에이전시 전문 기업
-- **핵심기술**: Django + LangChain + FAISS + Sentence Transformers
-- **서비스분야**: 축구 선수 스카우팅, 매칭, 인사업무 자동화
+- **핵심기술**: Django + LangChain + FAISS + Sentence Transformers + SQLite
+- **서비스분야**: 축구 선수 스카우팅, 매칭, 인사정보,내부규정 검색
 
 ## II. 시스템 아키텍처
-<img src="./산출물/시스템 아키텍처.png" style="width:100%; max-width:1000px;">
+<img src="./산출물/4. 시스템 구성도.png" style="width:100%; max-width:1000px;">
 
 ## III. 주요 기능
 ### 1. AI 챗봇 시스템
@@ -145,9 +145,6 @@ scipy==1.15.3               # 과학 계산
 ballzzi_work/
 ├── 📄 manage.py                    # Django 관리 스크립트
 ├── 📄 requirements.txt             # Python 의존성 패키지
-├── 📄 SETUP_REPORT.md             # 설치 및 설정 보고서
-├── 📄 CRAWLING_PATCH_NOTES.md     # 크롤링 개선 내역
-├── 📄 HOMEPAGE_PATCH_NOTES.md     # 홈페이지 개선 내역
 ├── 📄 styles.css                  # 전역 스타일시트
 │
 ├── 📁 proj4/                      # Django 프로젝트 설정
@@ -167,7 +164,7 @@ ballzzi_work/
 │   ├── tests.py                   # 테스트 파일
 │   ├── 📁 migrations/             # 데이터베이스 마이그레이션
 │   │   └── __init__.py
-│   └── 📁 source/                 # 🔥 핵심 AI 모듈 (가동파일)
+│   └── 📁 source/                 # 핵심 AI 모듈 (가동파일)
 │       ├── __init__.py
 │       ├── question_Routing.py    # 질문 분류 시스템
 │       │
@@ -187,23 +184,17 @@ ballzzi_work/
 │           ├── __init__.py
 │           ├── 📁 agents/         # AI 에이전트 시스템
 │           │   ├── __init__.py
-│           │   └── agent_executor.py     # 메인 에이전트 실행기
+│           │   └── agent_executor.py     # langchaing agent 실행기
 │           ├── 📁 data/           # RAG 벡터 데이터베이스
-│           │   ├── 📁 faiss_org_hr/     # 조직 HR 벡터DB
+│           │   ├── 📁 faiss_org_hr/     # 인사정보 벡터DB
 │           │   │   ├── index.faiss
-│           │   │   ├── index.pkl
-│           │   │   └── 📁 index/
-│           │   │       ├── index.faiss
-│           │   │       └── index.pkl
-│           │   └── 📁 faiss_win/        # Windows 환경 벡터DB
+│           │   │   └── index.pkl
+│           │   └── 📁 faiss_win/        # 내부규정 벡터DB
 │           │       ├── index.faiss
-│           │       ├── index.pkl
-│           │       └── 📁 index/
-│           │           ├── index.faiss
-│           │           └── index.pkl
+│           │       └── index.pkl
 │           └── 📁 tools/          # HR 도구 모음
 │               ├── __init__.py
-│               └── rag_tool.py           # RAG 검색 도구 (17KB)
+│               └── rag_tool.py           # RAG agent tool
 │
 ├── 📁 templates/                  # Django 템플릿
 │   ├── base.html                  # 기본 템플릿
@@ -223,19 +214,13 @@ ballzzi_work/
     │   ├── styles.css
     │   └── login_style.css
     ├── 📁 js/                     # JavaScript
-    │   └── script.js              # 메인 스크립트 (728줄)
+    │   └── script.js              # 메인 스크립트
     ├── 📁 icons/                  # 아이콘 및 로고
     │   ├── ballzzi.png           # 메인 로고
     │   ├── google-logo.png       # 구글 로고
-    │   ├── 1.png ~ 5.png         # 서비스 아이콘
+    │   ├── 1.png ~ 5.png         # index페이지 링크 아이콘
     │   └── *_ballzzi.png         # 감정별 마스코트 (6개)
-    ├── 📁 profiles/               # 선수 프로필 이미지
-    │   ├── 메시_프로필.jpg
-    │   ├── 손흥민_프로필.jpg
-    │   ├── 호날두_프로필.jpg
-    │   ├── 클롭_프로필.jpg
-    │   ├── 아스날_프로필.jpg
-    │   └── *_짤.jpg              # 선수별 이미지
+    ├── 📁 profiles/               # index페이지 소스 이미지    
     └── 📁 video/                  # 동영상 파일
         └── Company_introduction.mp4 # 회사 소개 영상
 ```
@@ -244,7 +229,7 @@ ballzzi_work/
 
 ### 1. 질문 분류 시스템 (`question_Routing.py`)
 ```python
-# 148줄의 종합적인 분류 시스템
+# 종합적인 분류 시스템
 - Sentence Transformers 모델: "jhgan/ko-sroberta-multitask"
 - FAISS 인덱스를 통한 유사도 기반 분류
 - 축구 관련 질문 vs HR 질문 자동 구분
@@ -254,7 +239,7 @@ ballzzi_work/
 ### 2. FM 모듈 (축구 선수 정보)
 #### 1) 메인 처리기 (`FM_GetData_LLM.py`)
 ```python
-# 92줄의 LLM 기반 데이터 처리 시스템
+# LLM 기반 데이터 처리 시스템
 - OpenAI GPT-4o-mini 모델 활용
 - SQLite DB 연동 (players_position.db)
 - 자연어 → SQL 쿼리 자동 변환
@@ -270,7 +255,7 @@ ballzzi_work/
 ### 3. HR 모듈 (인사업무 자동화)
 #### 1) 에이전트 실행기 (`agent_executor.py`)
 ```python
-# 213줄의 종합적인 AI 에이전트 시스템
+# 종합적인 AI 에이전트 시스템
 - OpenAI Functions Agent 구조
 - 6개의 전문 도구 우선순위별 활용:
   1. hybrid_search (통합 검색)
@@ -283,7 +268,7 @@ ballzzi_work/
 
 #### 2) RAG 도구 (`rag_tool.py`)
 ```python
-# 383줄의 다기능 RAG 검색 시스템
+# 다기능 RAG 검색 시스템
 - FAISS 벡터 데이터베이스 검색
 - 네이버 뉴스/웹 API 연동
 - 하이브리드 검색 (내부 + 외부)
@@ -293,7 +278,7 @@ ballzzi_work/
 ### 4. 웹 인터페이스
 #### 1) Django Views (`views.py`)
 ```python
-# 90줄의 메인 비즈니스 로직
+# 메인 비즈니스 로직
 - 메인 페이지 렌더링 (타임스탬프 캐시 무효화)
 - 챗봇 API 엔드포인트 (POST/GET 처리)
 - 로그인 필수 인증 (@login_required)
@@ -302,7 +287,7 @@ ballzzi_work/
 
 #### 2) 프론트엔드 (`templates/myapp/index.html`)
 ```html
-<!-- 747줄의 현대적인 반응형 웹 페이지 -->
+<!-- 현대적인 반응형 웹 페이지 -->
 - 회사 소개 슬라이더 시스템
 - 동영상 배경 및 애니메이션
 - Google OAuth 소셜 로그인
@@ -311,7 +296,7 @@ ballzzi_work/
 
 #### 3) JavaScript (`static/js/script.js`)
 ```javascript
-// 728줄의 인터랙티브 기능
+// 인터랙티브 기능
 - 슬라이더 자동 재생 및 제어
 - 부드러운 스크롤 애니메이션
 - 햄버거 메뉴 토글
@@ -400,38 +385,9 @@ python manage.py runserver
 - 관련 외부 정보 보완 제공
 ```
 
-## VIIII. API 엔드포인트
+## IX. 프로젝트 요약
 
-### 1. 챗봇 API
-```
-POST /chatbot/
-Content-Type: application/json
-
-Request Body:
-{
-    "question": "사용자 질문"
-}
-
-Response (축구 관련):
-{
-    "type": "FM",
-    "replies": [
-        {
-            "name": "선수명",
-            "description": "선수 설명",
-            "image_url": "이미지 URL"
-        }
-    ]
-}
-
-Response (HR 관련):
-{
-    "type": "HR",
-    "answer": "답변 내용"
-}
-```
-
-## 2. 성능 및 특징
+## 1. 성능 및 특징
 
 ### 1) 시스템 성능
 - **데이터베이스**: 8,000+ 축구 선수 정보
@@ -446,7 +402,7 @@ Response (HR 관련):
 - **하이브리드 RAG**: 내부 + 외부 정보 통합
 - **확장 가능**: 모듈식 구조로 기능 추가 용이
 
-## 3. 보안 및 제한사항
+## 2. 보안 및 제한사항
 
 ### 1) 보안 기능
 - Django CSRF 보호
@@ -461,12 +417,12 @@ Response (HR 관련):
 - 데이터베이스 읽기 전용 (현재 설정)
 
 ---
-## 📝 한줄 회고록
+## 한줄 회고록
 
 <table>
   <tr>
     <td><b>김&nbsp;도&nbsp;윤</b></td>
-    <td>팀원들과의 유기적 협업을 통해 실전 RAG 기능 구현까지 경험하며, 프로젝트를 성공적으로 마무리했습니다.</td>
+    <td>3차에서는 RAG 시스템 구축을, 4차에서는 프론트 구조 및 특수기능 구현을 맡아 담당했습니다. 능력 있는 팀원들과의 협력 덕분에 각 단계에서 안정적으로 시스템을 완성할 수 있었습니다.</td>
   </tr>
   <tr>
     <td><b>최&nbsp;요&nbsp;섭</b></td>
@@ -474,11 +430,11 @@ Response (HR 관련):
   </tr>
   <tr>
     <td><b>김&nbsp;재&nbsp;현</b></td>
-    <td>3차에 이어서 4차를 같은 팀원들과 했는데, 점점 팀워크가 잘 맞아지는 걸 느꼈습니다. 진행하면서 스스로 문제를 해결하며 한 단계 성장하는 계기가 되었습니다.</td>
+    <td>3차와 같은 팀 구성으로 4차까지 함께하며, 점점 팀워크가 잘 맞아지는 걸 느꼈습니다. 진행하면서 스스로 문제를 해결하며 한 단계 성장하는 계기가 되었습니다.</td>
   </tr>
   <tr>
     <td><b>이&nbsp;석&nbsp;원</b></td>
-    <td>3차에 이어서 4차를 같은 팀원들과 했는데, 협업 과정에서 다양한 의견을 접하며 시야를 넓힐 수 있었고, 팀원들과 함께 배우며 한층 더 성장할 수 있었습니다.</td>
+    <td>3차와 4차 프로젝트를 같은 팀원들과 함께 진행하며, 협업 과정에서 다양한 의견을 접하며 시야를 넓힐 수 있었고, 팀원들과 함께 배우며 한층 더 성장할 수 있었습니다.</td>
   </tr>
   <tr>
     <td><b>윤&nbsp;&nbsp;&nbsp;&nbsp;권</b></td>
