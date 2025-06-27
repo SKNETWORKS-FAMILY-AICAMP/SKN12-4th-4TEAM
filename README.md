@@ -26,7 +26,7 @@
     </td>
   </tr>
 </table>
----
+
 
 <div style="border: 1px solid #ccc; border-radius: 10px; padding: 20px; background-color: #f9f9f9">
   <h3>📌 팀 역할 및 기여 내용</h3>
