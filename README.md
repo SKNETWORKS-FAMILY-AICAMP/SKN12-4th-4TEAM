@@ -48,8 +48,10 @@
 - **핵심기술**: Django + LangChain + FAISS + Sentence Transformers
 - **서비스분야**: 축구 선수 스카우팅, 매칭, 인사업무 자동화
 
-## 🚀 주요 기능
+## 📊 시스템 아키텍처
+<img src="./산출물/시스템 아키텍처.png" style="width:100%; max-width:1000px;">
 
+## 🚀 주요 기능
 ### 🤖 AI 챗봇 시스템
 - **이중 도메인 분류**: 축구 선수 정보 vs 인사업무 질문 자동 구분
 - **RAG 기반 검색**: FAISS 벡터 데이터베이스 활용한 정확한 답변
@@ -401,9 +403,6 @@ Response (HR 관련):
     "answer": "답변 내용"
 }
 ```
-
-## 📊 시스템 아키텍처
-<img src="./산출물/시스템 아키텍처.png" style="width:100%; max-width:1000px;">
 
 ## 🚀 성능 및 특징
 
