@@ -403,7 +403,8 @@ Response (HR 관련):
 ```
 
 ## 📊 시스템 아키텍처
-<img src="./산출물/시스템 아키텍처.png" width="120px"><br/>
+<img src="./산출물/시스템 아키텍처.png" style="width:100%; max-width:1000px;">
+
 ## 🚀 성능 및 특징
 
 ### 시스템 성능
