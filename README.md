@@ -6,15 +6,15 @@
   <tr>
     <td align="center">
       <img src="./static/icons/ballzzi.png" width="120px"><br/>
-      <b>김도윤</b><br/><span style="font-size:14px;">인사 팀장</sub>
+      <b>김도윤</b><br/><span style="font-size:14px;">프론트 팀장</sub>
     </td>
     <td align="center">
       <img src="./static/icons/shame_ballzzi.png" width="120px"><br/>
-      <b>최요섭</b><br/><span style="font-size:14px;">보건 팀장</sub>
+      <b>최요섭</b><br/><span style="font-size:14px;">데이터 팀장</sub>
     </td>
     <td align="center">
       <img src="./static/icons/happy_ballzzi.png" width="120px"><br/>
-      <b>김재현</b><br/><span style="font-size:14px;">개발 팀장</sub>
+      <b>김재현</b><br/><span style="font-size:14px;">백엔드 팀장</sub>
     </td>
     <td align="center">
       <img src="./static/icons/sad_ballzzi.png" width="120px"><br/>
