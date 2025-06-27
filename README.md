@@ -340,7 +340,7 @@ python manage.py runserver
 
 ### 5. 접속 URL
 - **메인 페이지**: http://ballzzi.duckdns.org:8000/
-- **챗봇 서비스**: http://ballzzi.duckdns.org:8000chatbot/
+- **챗봇 서비스**: http://ballzzi.duckdns.org:8000/chatbot/
 
 ## 🎯 주요 기능 사용법
 
