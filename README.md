@@ -1,8 +1,8 @@
 
 
-# **⚽ GOLDENKICK 프로젝트-Ballzzi**<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;RAG 기반 LLM 챗봇&nbsp;&nbsp;-
+# **⚽ GOLDENKICK 프로젝트-Ballzzi**<br/>&nbsp;&nbsp;-&nbsp;&nbsp;RAG 기반 LLM 챗봇&nbsp;&nbsp;-
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;***Our Customer's Victory is Our Victory***
+&nbsp;&nbsp;***Our Customer's Victory is Our Victory***
 
 ---
 
@@ -69,15 +69,15 @@
 
 ## I. 프로젝트 개요
 
-**GOLDENKICK**프로젝트는 Ballzzi라는 케릭터를 활용한 Ballzzi라는이름의 LLM챗봇으로, RAG 기반의 langchain agent로 구성했다. 8,000명 이상의 축구 선수 데이터베이스와 인사업무 자동화를 통합한 RAG 기반 LLM 챗봇 시스템입니다.
+**GOLDENKICK**프로젝트는 Ballzzi라는 케릭터를 활용한 Ballzzi라는이름의 LLM챗봇으로, RAG 기반의 langchain agent로 구성했다. 8,000명 이상의 축구 선수 데이터베이스와 인사정보 및 내부규정을 검색가능한 RAG 기반 LLM 챗봇 시스템입니다. 정형DB인 축구선수 데이터와 내부규정,인사정보는 벡터DB로 구성하였습니다.
 
 - **프로젝트명**: GOLDENKICK (Ballzzi)
 - **기업형태**: 스포츠 에이전시 전문 기업
-- **핵심기술**: Django + LangChain + FAISS + Sentence Transformers
-- **서비스분야**: 축구 선수 스카우팅, 매칭, 인사업무 자동화
+- **핵심기술**: Django + LangChain + FAISS + Sentence Transformers + SQLite
+- **서비스분야**: 축구 선수 스카우팅, 매칭, 인사정보,내부규정 검색
 
 ## II. 시스템 아키텍처
-<img src="./산출물/시스템 아키텍처.png" style="width:100%; max-width:1000px;">
+<img src="./산출물/4.시스템 구성도.png" style="width:100%; max-width:1000px;">
 
 ## III. 주요 기능
 ### 1. AI 챗봇 시스템
