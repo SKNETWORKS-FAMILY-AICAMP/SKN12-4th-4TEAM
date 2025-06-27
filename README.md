@@ -403,28 +403,7 @@ Response (HR 관련):
 ```
 
 ## 📊 시스템 아키텍처
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   프론트엔드     │    │   Django 백엔드   │    │   AI 모듈 계층   │
-│                │    │                 │    │                │
-│ • HTML/CSS/JS  │◄──►│ • Views/URLs    │◄──►│ • Question      │
-│ • 반응형 UI     │    │ • Authentication │    │   Routing       │
-│ • 슬라이더      │    │ • Session Mgmt  │    │ • FM Module     │
-│ • 애니메이션     │    │ • Static Files  │    │ • HR Module     │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                ▲                        ▲
-                                │                        │
-                    ┌──────────────────┐    ┌─────────────────┐
-                    │   데이터 계층     │    │   외부 API 계층  │
-                    │                 │    │                │
-                    │ • SQLite DB     │    │ • OpenAI API    │
-                    │ • FAISS Vector  │    │ • Naver API     │
-                    │ • Session Store │    │ • Bing Search   │
-                    │ • Static Files  │    │ • Web Crawling  │
-                    └──────────────────┘    └─────────────────┘
-```
-
+<img src="./산출물/시스템 아키텍처.png" width="120px"><br/>
 ## 🚀 성능 및 특징
 
 ### 시스템 성능
