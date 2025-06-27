@@ -1,4 +1,43 @@
-# 🏆 GOLDENKICK (Ballzzi) - AI 기반 축구 선수 정보 & HR 통합 시스템
+# Ballzzi - RAG 기반 LLM 챗봇- 축구 선수 정보 & HR 통합 시스템
+
+## 👥 팀 소개
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="./static/icons/ballzzi.png" width="120px"><br/>
+      <b>김도윤</b><br/><span style="font-size:14px;">인사 팀장</sub>
+    </td>
+    <td align="center">
+      <img src="./static/icons/shame_ballzzi.png" width="120px"><br/>
+      <b>최요섭</b><br/><span style="font-size:14px;">보건 팀장</sub>
+    </td>
+    <td align="center">
+      <img src="./static/icons/happy_ballzzi.png" width="120px"><br/>
+      <b>김재현</b><br/><span style="font-size:14px;">개발 팀장</sub>
+    </td>
+    <td align="center">
+      <img src="./static/icons/sad_ballzzi.png" width="120px"><br/>
+      <b>이석원</b><br/><span style="font-size:14px;"> P M </sub>
+    </td>
+    <td align="center">
+      <img src="./static/icons/evil_ballzzi.png" width="120px"><br/>
+      <b>윤권</b><br/><span style="font-size:14px;">인프라 팀장</sub>
+    </td>
+  </tr>
+</table>
+---
+
+<div style="border: 1px solid #ccc; border-radius: 10px; padding: 20px; background-color: #f9f9f9">
+  <h3>📌 팀 역할 및 기여 내용</h3>
+  <p>
+    본 프로젝트는 전 팀원이 함께 기획, 개발, 디자인 전반에 걸쳐 협력하여 진행하였습니다.<br/>
+    모두가 기획 아이디어를 제안하고, 코드를 작성하며, 디자인 요소에도 의견을 나누는 등<br/>
+    역할의 경계를 두지 않고 적극적으로 참여하였습니다.<br/><br/>
+    특히 프론트엔드와 백엔드, 챗봇 구성 등 여러 파트를 유연하게 넘나들며<br/>
+    서로의 업무를 지원하고 피드백을 나눈 점이 본 팀의 강점이었습니다.
+  </p>
+</div>
 
 ## 📋 프로젝트 개요
 
