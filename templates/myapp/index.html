@@ -1,0 +1,747 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ballzzi - RAG 기반 LLM 챗봇</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v={{ timestamp }}">
+    <link rel="stylesheet" href="{% static 'css/login_style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- 🚨 긴급 캐시 무효화 테스트 -->
+    <style>
+        .partners-title {
+            background: linear-gradient(45deg, #ff0040, #ff8c00, #ffd700, #32cd32, #00bfff, #8a2be2) !important;
+            background-size: 400% 400% !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            font-size: 4rem !important;
+            font-weight: 900 !important;
+            text-align: center !important;
+            margin: 40px 0 !important;
+            padding: 20px !important;
+            position: relative !important;
+            z-index: 999 !important;
+            animation: rainbow-flow 3s linear infinite !important;
+            display: block !important;
+            width: 100% !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        .partners-title::before,
+        .partners-title::after {
+            content: '🌟' !important;
+            position: absolute !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            font-size: 2rem !important;
+            animation: sparkle-test 2s linear infinite !important;
+        }
+        
+        .partners-title::before {
+            left: -60px !important;
+        }
+        
+        .partners-title::after {
+            right: -60px !important;
+            animation-delay: 1s !important;
+        }
+        
+        @keyframes rainbow-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes sparkle-test {
+            0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+            50% { opacity: 0.5; transform: translateY(-50%) scale(1.5); }
+        }
+        
+        /* 강제 표시 */
+        .footer .partners-title,
+        .footer-content .partners-title,
+        h2.partners-title {
+            display: block !important;
+            background: #ff0000 !important;
+            color: #ffffff !important;
+            border: 3px solid #00ff00 !important;
+            padding: 20px !important;
+            margin: 20px auto !important;
+            text-align: center !important;
+            font-size: 50px !important;
+            font-weight: bold !important;
+            width: 90% !important;
+            max-width: 600px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 네비게이션 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" id="nav-logo-hover">
+                <img src="{% static 'icons/ballzzi.png' %}" alt="Ballzzi Logo" class="logo-img" id="logo-image">
+                <h2>Ballzzi</h2>
+                <div class="nav-logo-tooltip">
+                    <span class="tooltip-text" id="tooltip-message">안녕하세요! Ballzzi입니다 🏆</span>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">홈</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#video" class="nav-link">소개</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#services" class="nav-link">서비스</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#features" class="nav-link">특징</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link">회사정보</a>
+                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="{% url 'account_logout' %}" class="nav-link chatbot-link">🤖 Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a href="{% url 'account_login' %}" class="nav-link chatbot-link">🤖 Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 메인 홈 섹션 -->
+    <section id="home" class="hero-section">
+        <div class="hero-content">
+            <div class="hero-logo" id="hero-logo-hover">
+                <img src="{% static 'icons/ballzzi.png' %}" alt="Ballzzi" class="hero-logo-img" id="hero-logo-image">
+                <div class="hero-logo-tooltip">
+                    <span class="tooltip-text" id="hero-tooltip-message">안녕하세요! Ballzzi입니다 🏆</span>
+                </div>
+            </div>
+            <h1 class="hero-title">GOLDENKICK</h1>
+            <p class="hero-subtitle">고객의 승리가 우리의 승리다</p>
+            <button class="cta-button">🤖 AI 챗봇 사용하기</button>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- 영상 섹션 -->
+    {% load static %}
+    <section id="video" class="video-section">
+        <div class="video-container">
+            <video id="intro-video" muted loop playsinline autoplay>
+                <source src="{% static 'video/Company_introduction.mp4' %}" type="video/mp4">
+                브라우저가 비디오 태그를 지원하지 않습니다.
+            </video>
+        </div>
+        <div class="container video-text-overlay">            
+        </div>
+    </section>
+
+    <!-- 서비스 선택 섹션 - 회사 소개 -->
+    <section id="services" class="company-intro-section">
+        <div class="container">
+            <h2 class="section-title">회사 소개</h2>
+            
+            <div class="slider-container">
+                <div class="slides-wrapper" id="slidesWrapper">
+                    <!-- 슬라이드 1: 회사 소개 -->
+                    <div class="intro-slide">
+                        <div class="company-logo">
+                            <img src="{% static 'icons/ballzzi.png' %}" alt="GOLDENKICK Logo">
+                        </div>
+                        <h3>데이터로 움직이는 축구 에이전시<br>GOLDENKICK</h3>
+                        <p class="subtitle">AI 기술 기반 스포츠 에이전시 전문 기업</p>
+                        <p><span class="highlight">GOLDENKICK</span>은 <span class="highlight">8,000명 이상의 축구 선수 데이터</span>를 보유한 스포츠 산업의 디지털혁신을 이끌어가는 <span class="highlight">스포츠 에이전시</span>입니다.</p>
+                        <p>선수 검색, 탐색, 비교 분석부터 <span class="highlight">LLM 기반 AI 챗봇</span>을 통해 스카우팅부터 매칭까지, 모든 과정에 우리가 함께합니다.</p>
+                        <a href="{% url 'myapp:chatbot_page' %}" class="contact-btn">⚽ 선수 검색하기</a>
+                    </div>
+
+                    <!-- 슬라이드 2: 핵심 서비스 -->
+                    <div class="intro-slide">
+                        <div class="company-logo">
+                            <img src="{% static 'icons/ballzzi.png' %}" alt="GOLDENKICK Logo">
+                        </div>
+                        <h3>핵심 서비스</h3>
+                        <p class="subtitle">통합 AI 솔루션으로 효율적인 에이전시 서비스</p>
+                        <div class="company-values">
+                            <div class="value-item">
+                                <h4>📊 빅데이터</h4>
+                                <p>8,000명+ 축구 선수 데이터베이스 운영</p>
+                            </div>
+                            <div class="value-item">
+                                <h4>🤖 AI 챗봇</h4>
+                                <p>선수정보와 인사업무 통합 상담 서비스</p>
+                            </div>
+                            <div class="value-item">
+                                <h4>⚽ 전문성</h4>
+                                <p>스포츠 에이전시 분야의 풍부한 경험</p>
+                            </div>
+                        </div>
+                        <a href="{% url 'myapp:chatbot_page' %}" class="contact-btn">🚀 서비스 체험하기</a>
+                    </div>
+
+                    <!-- 슬라이드 3: 기술 혁신 -->
+                    <div class="intro-slide">
+                        <div class="company-logo">
+                            <img src="{% static 'icons/ballzzi.png' %}" alt="GOLDENKICK Logo">
+                        </div>
+                        <h3>기술 혁신</h3>
+                        <p class="subtitle">최첨단 AI 기술로 스포츠 산업의 미래를 만듭니다</p>
+                        <p>축구 선수 정보와 인사 관련 업무를 동시에 처리할 수 있는 <span class="highlight">통합 AI 솔루션</span>으로 효율적인 에이전시 서비스를 제공합니다.</p>
+                        <p><span class="highlight">머신러닝</span>과 <span class="highlight">자연어 처리</span> 기술을 활용하여 정확하고 신속한 정보 제공이 가능합니다.</p>
+                        <a href="{% url 'myapp:chatbot_page' %}" class="contact-btn">💬 문의하기</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 네비게이션 버튼 -->
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">‹</button>
+                <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">›</button>
+            </div>
+
+            <!-- 슬라이드 인디케이터 -->
+            <div class="slide-indicators">
+                <span class="indicator active" onclick="currentSlide(1)"></span>
+                <span class="indicator" onclick="currentSlide(2)"></span>
+                <span class="indicator" onclick="currentSlide(3)"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 특징 섹션 - 핵심 기능 -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="section-title">핵심 기능</h2>
+            
+            <div class="features-grid">
+                <!-- 기능 1: 선수 검색 -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        ⚽
+                    </div>
+                    <h3>선수 검색</h3>
+                    <p>
+                        <span class="highlight">8,000명+</span>의 축구 선수 데이터베이스에서&nbsp;
+                        포지션,연령, 실력, 경력 등 다양한 조건으로 
+                        <span class="highlight">정확한 선수 검색</span>이 가능합니다.
+                    </p>
+                    
+                    <div class="feature-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">8,000+</span>
+                            <div class="stat-label">등록 선수</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">50+</span>
+                            <div class="stat-label">검색 조건</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">99%</span>
+                            <div class="stat-label">검색 정확도</div>
+                        </div>
+                    </div>
+
+                    <button class="feature-btn">🔍 선수 검색하기</button>
+                </div>
+
+                <!-- 기능 2: 인사정보 검색 (메인 기능) -->
+                <div class="feature-card primary">
+                    <div class="feature-icon">
+                        👥
+                    </div>
+                    <h3>인사정보 검색</h3>
+                    <p>
+                        직원 정보, 계약 현황, 급여 정보 등 
+                        인사 관련 모든 데이터를 
+                        안전하고 효율적으로 검색하고 관리할 수 있습니다.
+                    </p>
+                    
+                    <div class="feature-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">99%</span>
+                            <div class="stat-label">데이터 보안</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">24/7</span>
+                            <div class="stat-label">서비스 지원</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">실시간</span>
+                            <div class="stat-label">정보 업데이트</div>
+                        </div>
+                    </div>
+
+                    <button class="feature-btn">📊 인사정보 확인</button>
+                </div>
+
+                <!-- 기능 3: 통합 서비스 챗봇 -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        🤖
+                    </div>
+                    <h3>통합 서비스 챗봇</h3>
+                    <p>
+                        <span class="highlight">LLM 기반 AI 챗봇</span>으로 
+                        선수 정보와 인사 정보를 동시에 질문하고 
+                        <span class="highlight">통합된 답변</span>을 받을 수 있습니다.
+                    </p>
+                    
+                    <div class="feature-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">2in1</span>
+                            <div class="stat-label">통합 검색</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">95%</span>
+                            <div class="stat-label">응답 정확도</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">즉시</span>
+                            <div class="stat-label">답변 제공</div>
+                        </div>
+                    </div>
+
+                    <button class="feature-btn">💬 챗봇 체험하기</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 회사 정보 섹션 - 고객 슬라이더 -->
+    <section id="about" class="customers-section">
+        <div class="container">
+            <h2 class="section-title">우리와 함께한 고객들</h2>
+            <p class="section-subtitle">GOLDENKICK과 함께 성공을 이뤄낸 파트너들의 이야기</p>
+            
+            <div class="slider-container">
+                <!-- 이전 버튼 -->
+                <button class="slider-nav prev" onclick="prevSlide()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                
+                <!-- 다음 버튼 -->
+                <button class="slider-nav next" onclick="nextSlide()">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <div class="slider-wrapper" id="customerSliderWrapper">
+                    <!-- 고객 카드 1 - 호날두 -->
+                    <div class="customer-card">
+                        <div class="customer-info">
+                            <div class="customer-logo">
+                                <img src="{% static 'profiles/호날두_프로필.jpg' %}" alt="호날두 프로필" class="customer-logo-img">
+                            </div>
+                            <h3 class="customer-name">크리스티아누 호날두</h3>
+                            <div class="customer-industry">축구 선수</div>
+                            <p class="customer-description">
+                                GOLDENKICK 플랫폼을 통해 알 나스르와 계약을 하여 아내를 새로 만나고, 
+                                여의도에 20층짜리 복합주택을 하나 뽑았습니다.
+                                헬복하세요.
+                            </p>
+                            <div class="customer-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">850+</span>
+                                    <div class="stat-label">커리어 골</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">5</span>
+                                    <div class="stat-label">발롱도르</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">20+</span>
+                                    <div class="stat-label">우승 트로피</div>
+                                </div>
+                            </div>
+                            <div class="customer-quote">
+                                <img src="{% static 'profiles/호날두_행복하세요.jpg' %}" alt="호날두 행복하세요" class="customer-quote-img">
+                            </div>
+                            <div class="customer-position">- 크리스티아누 호날두, 알 나스르 FC</div>
+                        </div>
+                        <div class="customer-image">
+                            <div class="customer-visual">
+                                <img src="{% static 'profiles/호날두_짤.jpg' %}" alt="호날두" class="customer-visual-img">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 고객 카드 2 - 메시 -->
+                    <div class="customer-card">
+                        <div class="customer-info">
+                            <div class="customer-logo">
+                                <img src="{% static 'profiles/메시_프로필.jpg' %}" alt="메시 프로필" class="customer-logo-img">
+                            </div>
+                            <h3 class="customer-name">리오넬 메시</h3>
+                            <div class="customer-industry">축구 선수</div>
+                            <p class="customer-description">
+                                GOLDENKICK 플랫폼을 통해 세금 관리를 잘하여
+                                미국 영주권을 받을 수 있었습니다.</br>
+                                메시 기모씨~
+                            </p>
+                            <div class="customer-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">800+</span>
+                                    <div class="stat-label">커리어 골</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">8</span>
+                                    <div class="stat-label">발롱도르</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">44</span>
+                                    <div class="stat-label">우승 트로피</div>
+                                </div>
+                            </div>
+                            <div class="customer-quote">
+                                "GOLDENKICK 기모씨~"
+                            </div>
+                            <div class="customer-position">- 리오넬 메시, 인터 마이애미 CF</div>
+                        </div>
+                        <div class="customer-image">
+                            <div class="customer-visual">
+                                <img src="{% static 'profiles/메시_짤.jpg' %}" alt="메시" class="customer-visual-img">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 고객 카드 3 - 클롭 감독 -->
+                    <div class="customer-card">
+                        <div class="customer-info">
+                            <div class="customer-logo">
+                                <img src="{% static 'profiles/클롭_프로필.jpg' %}" alt="클롭 프로필" class="customer-logo-img">
+                            </div>
+                            <h3 class="customer-name">위르겐 클롭</h3>
+                            <div class="customer-industry">축구 감독</div>
+                            <p class="customer-description">
+                                GOLDENKICK을 통해 강남 런던 치과에서 치아 미백을 저렴하게 이용할 수 있었습니다.<br>
+                                Guten Tag (구탠탁~)
+                            </p>
+                            <div class="customer-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">8</span>
+                                    <div class="stat-label">주요 트로피</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">9년</span>
+                                    <div class="stat-label">리버풀 재임</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">68%</span>
+                                    <div class="stat-label">승률</div>
+                                </div>
+                            </div>
+                            <div class="customer-quote">
+                                치아 미백은 강남 런던 치과에서
+                            </div>
+                            <div class="customer-position">- 위르겐 클롭, 前 리버풀 FC 감독</div>
+                        </div>
+                        <div class="customer-image">
+                            <div class="customer-visual">
+                                <img src="{% static 'profiles/클롭_짤.jpg' %}" alt="클롭" class="customer-visual-img">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 고객 카드 4 - 아스날 -->
+                    <div class="customer-card">
+                        <div class="customer-info">
+                            <div class="customer-logo">
+                                <img src="{% static 'profiles/아스날_프로필.jpg' %}" alt="아스날 프로필" class="customer-logo-img">
+                            </div>
+                            <h3 class="customer-name">아스날 FC</h3>
+                            <div class="customer-industry">프리미어리그 클럽</div>
+                            <p class="customer-description">
+                                이길 수 없어서 GOLDENKICK에 합류했습니다.
+                            </p>
+                            <div class="customer-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">14</span>
+                                    <div class="stat-label">리그 우승</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">14</span>
+                                    <div class="stat-label">FA컵 승리</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">130+</span>
+                                    <div class="stat-label">클럽 역사</div>
+                                </div>
+                            </div>
+                            <div class="customer-quote">
+                                "내 안에 작은 아이가 GOLDENKICK이라고 속삭였다."
+                                
+                            </div>
+                            <div class="customer-position">- 로빈 반 페르시</div>
+                        </div>
+                        <div class="customer-image">
+                            <div class="customer-visual">
+                                <img src="{% static 'profiles/아스날_짤.jpg' %}" alt="아스날" class="customer-visual-img">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 고객 카드 5 - 손흥민 -->
+                    <div class="customer-card">
+                        <div class="customer-info">
+                            <div class="customer-logo">
+                                <img src="{% static 'profiles/손흥민_프로필.jpg' %}" alt="손흥민 프로필" class="customer-logo-img">
+                            </div>
+                            <h3 class="customer-name">손흥민</h3>
+                            <div class="customer-industry">축구 선수</div>
+                            <p class="customer-description">
+                                GOLDENKICK을 만나고 드디어 월드 클래스가 되었습니다. 
+                            </p>
+                            <div class="customer-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">130+</span>
+                                    <div class="stat-label">프리미어리그 골</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">120+</span>
+                                    <div class="stat-label">국가대표 경기</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">10+</span>
+                                    <div class="stat-label">활동 시즌</div>
+                                </div>
+                            </div>
+                            <div class="customer-quote">
+                                "손웅정 : 어 ㅇㅈ~"
+                            </div>
+                            <div class="customer-position">- 손흥민, 토트넘 홋스퍼 FC</div>
+                        </div>
+                        <div class="customer-image">
+                            <div class="customer-visual">
+                                <img src="{% static 'profiles/손흥민_짤.jpg' %}" alt="손흥민" class="customer-visual-img">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 인디케이터 -->
+            <div class="slider-indicators">
+                <div class="indicator active" onclick="goToSlide(0)"></div>
+                <div class="indicator" onclick="goToSlide(1)"></div>
+                <div class="indicator" onclick="goToSlide(2)"></div>
+                <div class="indicator" onclick="goToSlide(3)"></div>
+                <div class="indicator" onclick="goToSlide(4)"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 푸터 -->
+        <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <h2 class="partners-title">협력업체</h2>
+                <div class="footer-social">
+                    <a href="https://m.sports.naver.com/wfootball/index" class="social-link" data-tooltip="최신 축구 뉴스" target="_blank" rel="noopener noreferrer">
+                        <img src="{% static 'icons/1.png' %}" alt="Social Link 1" class="social-icon-img">
+                        <div class="social-tooltip">최신 축구 뉴스</div>
+                    </a>
+                    <a href="https://sports.news.naver.com/wfootball/schedule/index" class="social-link" data-tooltip="해외축구일정" target="_blank" rel="noopener noreferrer">
+                        <img src="{% static 'icons/2.png' %}" alt="Social Link 2" class="social-icon-img">
+                        <div class="social-tooltip">해외축구일정</div>
+                    </a>
+                    <a href="https://m.sports.naver.com/wfootball/record/clubworldcup?seasonCode=o2Rl&tab=teamRank" class="social-link" data-tooltip="해외축구 순위" target="_blank" rel="noopener noreferrer">
+                        <img src="{% static 'icons/3.png' %}" alt="Social Link 3" class="social-icon-img">
+                        <div class="social-tooltip">해외축구 순위</div>
+                    </a>
+                    <a href="https://www.transfermarkt.com" class="social-link" data-tooltip="트랜스퍼 마켓" target="_blank" rel="noopener noreferrer">
+                        <img src="{% static 'icons/4.png' %}" alt="Social Link 4" class="social-icon-img">
+                        <div class="social-tooltip">트랜스퍼 마켓</div>
+                    </a>
+                    <a href="https://www.spotvnow.co.kr/football" class="social-link" data-tooltip="SpotTV" target="_blank" rel="noopener noreferrer">
+                        <img src="{% static 'icons/5.png' %}" alt="Social Link 5" class="social-icon-img">
+                        <div class="social-tooltip">SpotTV</div>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Ballzzi. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 플로팅 챗봇 아이콘 -->
+    <div id="floating-chatbot" class="floating-chatbot" title="저는 Ballzzi입니다. 무엇을 도와드릴까요?">
+        <img src="{% static 'icons/ballzzi.png' %}" alt="챗봇" class="floating-chatbot-img">
+        <div class="floating-tooltip">
+            <span class="tooltip-text">저는 <strong>Ballzzi</strong>입니다. 무엇을 도와드릴까요?</span>
+        </div>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    
+    <!-- 🎯 HERO 로고 + 스크롤 네비게이션 완성 버전 -->
+    <script>
+        console.log('🎯 스크롤 네비게이션 + HERO 로고 최종 버전 로드!');
+        
+        // 🎯 스크롤 네비게이션 기능 강화
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📍 스크롤 네비게이션 시스템 초기화...');
+            
+            // 모든 네비게이션 링크에 스크롤 기능 추가
+            const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    
+                    if (targetSection) {
+                        console.log(`🎯 스크롤 이동: ${targetId}`);
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                        
+                        // 모바일에서 메뉴 닫기
+                        const navMenu = document.querySelector('.nav-menu');
+                        const hamburger = document.querySelector('.hamburger');
+                        if (navMenu && hamburger) {
+                            navMenu.classList.remove('active');
+                            hamburger.classList.remove('active');
+                        }
+                    }
+                });
+            });
+            
+            // 스크롤 인디케이터 기능
+            const scrollIndicator = document.querySelector('.scroll-indicator');
+            if (scrollIndicator) {
+                scrollIndicator.addEventListener('click', function() {
+                    console.log('🎯 스크롤 인디케이터 클릭 - 소개 섹션으로 이동');
+                    document.querySelector('#video').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                });
+            }
+        });
+        
+        // Hero 로고 기능 구현
+        setTimeout(() => {
+            const heroLogo = document.getElementById('hero-logo-hover');
+            const heroImage = document.getElementById('hero-logo-image');
+            const heroMessage = document.getElementById('hero-tooltip-message');
+            
+            console.log('HERO 로고 요소들:', {
+                heroLogo: heroLogo,
+                heroImage: heroImage, 
+                heroMessage: heroMessage
+            });
+            
+            if (heroLogo && heroImage && heroMessage) {
+                console.log('✅ HERO 로고 모든 요소 발견!');
+                
+                // 랜덤 이미지와 메시지 배열
+                const ballzziStates = [
+                    {
+                        image: '{% static "icons/shy_ballzzi.png" %}',
+                        message: '마...말..말걸지...마...🙈 '
+                    },
+                    {
+                        image: '{% static "icons/angry_ballzzi.png" %}',
+                        message: '으아악! 화나!!!!!! 😤'
+                    },
+                    {
+                        image: '{% static "icons/evil_ballzzi.png" %}',
+                        message: '후후후... 내 계획이 완벽해! 😈'
+                    },
+                    {
+                        image: '{% static "icons/sad_ballzzi.png" %}',
+                        message: '흑흑... 슬퍼요... 😢'
+                    },
+                    {
+                        image: '{% static "icons/shame_ballzzi.png" %}',
+                        message: '아... 민망해요... 🫣'
+                    },
+                    {
+                        image: '{% static "icons/happy_ballzzi.png" %}',
+                        message: '아이 씐나~~😃'
+                    }
+                ];
+                
+                let currentStateIndex = 0;
+                let isHovering = false;
+                
+                // 🎯 마우스 올릴 때마다 랜덤 이미지 변경
+                heroLogo.addEventListener('mouseenter', function() {
+                    isHovering = true;
+                    console.log('🎯 HERO 로고 hover 이벤트 발생!');
+                    
+                    // 🎲 랜덤 상태 선택 (현재 상태 제외)
+                    let randomIndex;
+                    do {
+                        randomIndex = Math.floor(Math.random() * ballzziStates.length);
+                    } while (randomIndex === currentStateIndex && ballzziStates.length > 1);
+                    
+                    currentStateIndex = randomIndex;
+                    const currentState = ballzziStates[currentStateIndex];
+                    
+                    console.log('🎲 랜덤 상태 변경:', {
+                        index: randomIndex,
+                        emotion: currentState.message,
+                        image: currentState.image
+                    });
+                    
+                    // 이미지와 메시지 변경
+                    heroImage.src = currentState.image;
+                    heroMessage.textContent = currentState.message;
+                });
+                
+                // 🚪 마우스 벗어날 때 기본 상태로 복귀
+                heroLogo.addEventListener('mouseleave', function() {
+                    isHovering = false;
+                    console.log('🚪 HERO 로고 mouseleave 이벤트');
+                    
+                    setTimeout(() => {
+                        if (!isHovering) {
+                            console.log('🔄 기본 상태로 복귀');
+                            heroImage.src = ballzziStates[0].image;
+                            heroMessage.textContent = ballzziStates[0].message;
+                            currentStateIndex = 0;
+                        }
+                    }, 500); // 0.5초 후 복귀
+                });
+                
+                // 🔗 클릭 시 다른 사이트로 이동
+                heroLogo.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('🔗 HERO 로고 클릭 - 사이트 이동!');
+                    window.open('#545#', '_blank'); // 새 탭에서 열기
+                });
+                
+                // 기본 스타일 설정 (빨간 테두리 제거)
+                heroLogo.style.cursor = 'pointer';
+                heroLogo.style.border = 'none'; // 빨간 테두리 제거
+                console.log('✅ HERO 로고 설정 완료 - hover 변경 + 클릭 링크');
+                
+            } else {
+                console.error('❌ HERO 로고 요소를 찾을 수 없음!');
+            }
+        }, 1000);
+    </script>
+</body>
+</html> 

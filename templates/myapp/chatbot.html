@@ -1,0 +1,305 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ Ballzzi AI 챗봇</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
+
+</head>
+<body>
+    <div class="chat-header">
+        <a href="/" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            <span>홈으로</span>
+        </a>
+        <h1>⚽ Ballzzi AI 챗봇</h1>
+        <p>축구 선수 정보와 HR 관련 질문에 답변해드립니다</p>
+    </div>
+
+    <div class="chat-container">
+        <div id="chat-window" class="chat-window">
+            <div id="welcome-message" class="welcome-message">
+                <img src="{% static 'icons/ballzzi.png' %}" alt="Ballzzi AI" class="welcome-chatbot-icon">
+                <h2>안녕하세요! Ballzzi AI 챗봇입니다</h2>
+                <p>축구 선수 정보나 HR 관련 질문을 자유롭게 물어보세요.<br>
+                아래 예시 질문을 클릭하거나 직접 입력해보세요!</p>
+                
+                <div class="example-tags">
+                    <button class="example-tag" data-question="손흥민에 대해 알려줘">⚽ 손흥민 정보</button>
+                    <button class="example-tag" data-question="리오넬 메시의 특징은?">🌟 메시 특징</button>
+                    <button class="example-tag" data-question="연차는 어떻게 써요?">📅 연차 사용법</button>
+                    <button class="example-tag" data-question="출장비는 어떻게 처리해요?">💼 출장비 처리</button>
+                    <button class="example-tag" data-question="호날두와 메시 중 누가 더 좋아?">⚽ 선수 비교</button>
+                </div>
+            </div>
+            
+            {% for msg in chat_messages %}
+                <div class="chat-message {% if msg.role == 'user' %}user-message{% else %}assistant-message{% endif %}">
+                    <div class="message-avatar">
+                        {% if msg.role == 'user' %}
+                            <i class="fas fa-user"></i>
+                        {% else %}
+                            <img src="{% static 'icons/ballzzi.png' %}" alt="AI" class="ai-avatar-img">
+                        {% endif %}
+                    </div>
+                    <div class="message-bubble">
+                        {% if msg.image_url %}
+                            <img src="{{ msg.image_url }}" alt="{{ msg.image_caption }}" class="message-image">
+                        {% endif %}
+                        {{ msg.content|safe }}
+                    </div>
+                </div>
+            {% endfor %}
+            
+            <div id="spinner" class="spinner-overlay" style="display: none;">
+                <div class="loading-image-container">
+                    <img src="{% static 'icons/angry_ballzzi.png' %}" class="loading-image active" alt="로딩 중...">
+                    <img src="{% static 'icons/ballzzi.png' %}" class="loading-image" alt="로딩 중...">
+                    <img src="{% static 'icons/evil_ballzzi.png' %}" class="loading-image" alt="로딩 중...">
+                    <img src="{% static 'icons/sad_ballzzi.png' %}" class="loading-image" alt="로딩 중...">
+                </div>
+            </div>
+        </div>
+
+        <form id="chat-form">
+            <div class="input-container">
+                <input type="text" id="user-input" class="input-field" 
+                       placeholder="질문을 입력하세요... (예: 손흥민은 어떤 선수야?)" 
+                       autocomplete="off">
+                <button type="submit" id="submit-button" class="send-button">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+    // 이미지 순환을 제어할 타이머 변수
+    let loadingInterval;
+    let currentLoadingIndex = 0; // 전역 변수로 선언
+
+    // CSRF 토큰을 가져오는 함수 (Django 보안 필수)
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // --- 페이지 요소 선택 ---
+    const csrfToken = getCookie('csrftoken');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const chatWindow = document.getElementById('chat-window');
+    const spinner = document.getElementById('spinner');
+    const welcomeMessage = document.getElementById('welcome-message');
+    const exampleTags = document.querySelectorAll('.example-tag');
+    const submitButton = document.getElementById('submit-button');
+
+    // --- 핵심 기능 함수 정의 ---
+
+    // 답변을 화면에 추가하는 함수
+    function appendMessage(role, content, extraClass = '') {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('chat-message', role === 'user' ? 'user-message' : 'assistant-message');
+
+        const avatar = document.createElement('div');
+        avatar.classList.add('message-avatar');
+        avatar.innerHTML = role === 'user' ? '<i class="fas fa-user"></i>' : `<img src="{% static 'icons/ballzzi.png' %}" alt="AI" class="ai-avatar-img">`;
+
+        const bubble = document.createElement('div');
+        bubble.classList.add('message-bubble');
+        if (extraClass) {
+            bubble.classList.add(extraClass);
+        }
+
+        if (role === 'user') {
+            bubble.innerText = content;
+        } else {
+            bubble.innerHTML = content;
+        }
+
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(bubble);
+        chatWindow.appendChild(messageDiv);
+    }
+    
+    // 로딩 애니메이션 시작 함수
+    function startLoadingAnimation() {
+        if (!spinner) return;
+        spinner.style.display = 'flex';
+        const loadingImages = document.querySelectorAll('.loading-image');
+        currentLoadingIndex = 0; // 시작 시 0으로 초기화
+
+        if (loadingImages.length > 0) {
+            clearInterval(loadingInterval);
+            loadingImages.forEach(img => img.classList.remove('active'));
+            loadingImages[currentLoadingIndex].classList.add('active');
+
+            loadingInterval = setInterval(() => {
+                loadingImages[currentLoadingIndex].classList.remove('active');
+                currentLoadingIndex = (currentLoadingIndex + 1) % loadingImages.length;
+                loadingImages[currentLoadingIndex].classList.add('active');
+            }, 1000);
+        }
+    }
+
+    // 로딩 애니메이션 정지 함수
+    function stopLoadingAnimation() {
+        if (!spinner) return;
+        spinner.style.display = 'none';
+        clearInterval(loadingInterval);
+    }
+
+    // 서버에 질문을 보내고 답변을 처리하는 메인 함수
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+        const prompt = userInput.value.trim();
+        if (!prompt) return;
+
+        if (welcomeMessage) {
+            welcomeMessage.style.display = 'none';
+        }
+
+        appendMessage('user', prompt);
+        userInput.value = '';
+        submitButton.disabled = true;
+        
+        startLoadingAnimation();
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        try {
+            const response = await fetch(`{% url "myapp:chatbot_page" %}`, { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ question: prompt })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            stopLoadingAnimation();
+            submitButton.disabled = false;
+
+            // 답변 종류에 따라 다른 스타일 적용
+            if (data.type === 'FM') {
+                if (data.replies && data.replies.length > 0) {
+                    for (const item of data.replies) {
+                        const descriptionHtml = DOMPurify.sanitize(marked.parse(item.description));
+                        const summaryHtml = `<strong>${item.name}</strong>`;
+                        let content = `
+                            <div class="response-grid-container">
+                                <div class="grid-item-image">
+                                    <img src="${item.image_url || ''}" alt="${item.name} 사진" class="message-image-grid">
+                                </div>
+                                <div class="grid-item-summary">
+                                    ${summaryHtml}
+                                    <p class="summary-position">${item.position || '공격수'}</p>
+                                </div>
+                                <div class="grid-item-details">
+                                    ${descriptionHtml}
+                                </div>
+                            </div>
+                        `;
+                        appendMessage('assistant', content);
+                    }
+                } else {
+                    appendMessage('assistant', '죄송합니다. 축구선수 정보를 찾을 수 없습니다.');
+                }
+            } else if (data.type === 'HR') {
+                // HR 답변을 위한 고정 아이콘 URL
+                const hrIconUrl = `{% static 'icons/hr_icon.png' %}`;
+                const answerHtml = DOMPurify.sanitize(marked.parse(data.answer));
+
+                // FM과 다른, HR 전용 레이아웃을 사용하려면 여기서 별도의 HTML 구조를 만들어야 합니다.
+                // 지금은 텍스트만 표시하는 'hr-bubble'을 사용합니다.
+                appendMessage('assistant', answerHtml, 'hr-bubble'); 
+            } else {
+                const defaultAnswerHtml = DOMPurify.sanitize(marked.parse(data.answer || '죄송합니다. 응답을 처리하는 중 문제가 발생했습니다.'));
+                appendMessage('assistant', defaultAnswerHtml);
+            }
+            
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        } catch (error) {
+            console.error('Error sending message:', error);
+            stopLoadingAnimation();
+            submitButton.disabled = false;
+            appendMessage('assistant', '죄송합니다. 네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+    }
+
+    // --- 이벤트 리스너 등록 ---
+    chatForm.addEventListener('submit', handleFormSubmit);
+
+    exampleTags.forEach(tag => {
+        tag.addEventListener('click', () => {
+            userInput.value = tag.dataset.question;
+            chatForm.dispatchEvent(new Event('submit'));
+        });
+    });
+
+    // 메시지를 채팅창에 추가하는 함수
+    function appendMessage(role, content) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('chat-message');
+        messageDiv.classList.add(role === 'user' ? 'user-message' : 'assistant-message');
+
+        const avatar = document.createElement('div');
+        avatar.classList.add('message-avatar');
+        avatar.innerHTML = role === 'user' ? '<i class="fas fa-user"></i>' : `<img src="{% static 'icons/ballzzi.png' %}" alt="AI" class="ai-avatar-img">`;
+
+        const bubble = document.createElement('div');
+        bubble.classList.add('message-bubble');
+
+        if (role === 'user') {
+            // 사용자의 입력은 텍스트로 처리하여 HTML 태그가 실행되지 않도록 함
+            bubble.innerText = content;
+        } else {
+            // AI의 응답은 변환된 HTML을 그대로 삽입
+            bubble.innerHTML = content;
+        }
+
+        messageDiv.appendChild(avatar);
+        messageDiv.appendChild(bubble);
+        chatWindow.appendChild(messageDiv);
+    }
+    userInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            chatForm.dispatchEvent(new Event('submit'));
+        }
+    });
+
+    window.addEventListener('load', function() {
+        userInput.focus();
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    });
+
+</script>
+</body>
+</html>
