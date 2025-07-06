@@ -19,7 +19,7 @@
     </td>
     <td align="center">
       <img src="./static/icons/shame_ballzzi.png" width="120px"><br/>
-      <b>최요섭</b><br/><span style="font-size:14px;">데이터 팀장</sub>
+      <b>최요섭</b><br/><span style="font-size:14px;"> DB 팀장</sub>
     </td>
     <td align="center">
       <img src="./static/icons/happy_ballzzi.png" width="120px"><br/>
