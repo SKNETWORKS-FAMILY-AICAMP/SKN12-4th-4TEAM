@@ -47,9 +47,6 @@
     서로의 업무를 지원하고 피드백을 나눈 점이 본 팀의 강점이었습니다.
   </p>
 </div>
-<h1>📚 STACKS</h1>
-  </p>
-</div>
 </div><h1>📚 STACKS</h1></div>
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
